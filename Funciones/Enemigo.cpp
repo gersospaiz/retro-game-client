@@ -1,5 +1,5 @@
-#include "Enemigo.h"
-#include "Configuracion.h"
+#include "../Heders/Enemigo.h"
+#include "../Heders/Configuracion.h"
 #include <cstdlib>
 
 Enemigo::Enemigo(sf::Texture& textura) : sprite(textura), cambioX(VELOCIDAD_ENEMIGO) {

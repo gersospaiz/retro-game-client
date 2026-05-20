@@ -1,5 +1,5 @@
-#include "Bala.h"
-#include "Configuracion.h"
+#include "../Heders/Bala.h"
+#include "../Heders/Configuracion.h"
 
 Bala::Bala(sf::Texture& textura) : sprite(textura) {
     sprite.setPosition({0.f, 480.f});

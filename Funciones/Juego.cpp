@@ -1,6 +1,6 @@
-#include "Juego.h"
-#include "Configuracion.h"
-#include "Utilidades.h"
+#include "../Heders/Juego.h"
+#include "../Heders/Configuracion.h"
+#include "../Heders/Utilidades.h"
 
 #include <iostream>
 #include <cstdlib>

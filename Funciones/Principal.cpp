@@ -1,4 +1,4 @@
-#include "Juego.h"
+#include "../Heders/Juego.h"
 
 int main() {
     Juego juego;

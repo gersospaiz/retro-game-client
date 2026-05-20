@@ -1,5 +1,5 @@
-#include "Jugador.h"
-#include "Configuracion.h"
+#include "../Heders/Jugador.h"
+#include "../Heders/Configuracion.h"
 
 Jugador::Jugador(sf::Texture& textura) : sprite(textura) {
     sprite.setPosition({370.f, 470.f});
