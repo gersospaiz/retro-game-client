@@ -6,6 +6,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(SFML_DIR "C:/SFML/SFML-2.6.2/lib/cmake/SFML")
 
 find_package(SFML 2.5 REQUIRED COMPONENTS graphics window system audio PATHS ${SFML_DIR} NO_DEFAULT_PATH)
+set(CURL_ROOT "C:/curl")
+set(CURL_INCLUDE_DIR "C:/curl/include")
+set(CURL_LIBRARY "C:/curl/lib/libcurl.dll.a")
+find_package(CURL REQUIRED)
 
 add_executable(DestructorEspacial
         Funciones/Principal.cpp
@@ -13,6 +17,8 @@ add_executable(DestructorEspacial
         Funciones/Jugador.cpp
         Funciones/Enemigo.cpp
         Funciones/Bala.cpp
+        Heders/login.h
+        Funciones/login.cpp
 )
 
 target_link_libraries(DestructorEspacial
@@ -20,4 +26,5 @@ target_link_libraries(DestructorEspacial
         sfml-window
         sfml-system
         sfml-audio
+        CURL::libcurl
 )

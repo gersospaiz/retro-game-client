@@ -34,37 +34,36 @@ Juego::Juego()
 }
 
 void Juego::cargarRecursos() {
-    if (!texturaFondo.loadFromFile("assets/images/background.png")) {
+    if (!texturaFondo.loadFromFile("assets/images/background.png"))
         std::cout << "Error al cargar fondo\n";
-    }
 
-    if (!texturaJugador.loadFromFile("assets/images/space-invaders.png")) {
+    if (!texturaJugador.loadFromFile("assets/images/space-invaders.png"))
         std::cout << "Error al cargar jugador\n";
-    }
 
-    if (!texturaBala.loadFromFile("assets/images/bullet.png")) {
+    if (!texturaBala.loadFromFile("assets/images/bullet.png"))
         std::cout << "Error al cargar bala\n";
-    }
 
-    if (!texturaEnemigo1.loadFromFile("assets/images/enemy1.png")) {
+
+    if (!bufferDisparo.loadFromFile("assets/audios/laser.mp3"))
+        std::cout << "Error al cargar el audio del disparo\n";
+
+    for (auto& s : sonidosDisparo)
+        s.setBuffer(bufferDisparo);
+
+    if (!texturaEnemigo1.loadFromFile("assets/images/enemy1.png"))
         std::cout << "Error al cargar enemigo 1\n";
-    }
 
-    if (!texturaEnemigo2.loadFromFile("assets/images/enemy2.png")) {
+    if (!texturaEnemigo2.loadFromFile("assets/images/enemy2.png"))
         std::cout << "Error al cargar enemigo 2\n";
-    }
 
-    if (!fuente.loadFromFile("assets/fonts/comicbd.ttf")) {
+    if (!fuente.loadFromFile("assets/fonts/comicbd.ttf"))
         std::cout << "Error al cargar fuente\n";
-    }
 
-    if (!fuenteGameOver.loadFromFile("assets/fonts/armalite.TTF")) {
+    if (!fuenteGameOver.loadFromFile("assets/fonts/armalite.TTF"))
         std::cout << "Error al cargar fuente Game Over\n";
-    }
 
-    if (!musicaFondo.openFromFile("assets/audios/background_music.wav")) {
+    if (!musicaFondo.openFromFile("assets/audios/background_music.mp3"))
         std::cout << "Error al cargar musica\n";
-    }
 }
 
 void Juego::ejecutar() {
@@ -83,22 +82,26 @@ void Juego::procesarEventos() {
     sf::Event evento;
 
     while (ventana.pollEvent(evento)) {
-        if (evento.type == sf::Event::Closed) {
+        if (evento.type == sf::Event::Closed)
             ventana.close();
-        }
     }
 
     if (!juegoTerminado) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
             jugador->moverIzquierda();
-        }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
             jugador->moverDerecha();
-        }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
             bala->disparar(jugador->obtenerPosicion().x);
+            for (auto& s : sonidosDisparo) {
+                if (s.getStatus() != sf::Sound::Playing) {
+                    s.setBuffer(bufferDisparo);
+                    s.play();
+                    break;
+                }
+            }
         }
     }
 }
@@ -116,7 +119,6 @@ void Juego::actualizar() {
 
         if (bala->estaDisparada() &&
             hayColision(enemigo->obtenerPosicion(), bala->obtenerPosicion())) {
-
             bala->reiniciar();
             puntuacion++;
             enemigo->reiniciar();

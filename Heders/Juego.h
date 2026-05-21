@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <vector>
+#include <array>
 
 #include "Jugador.h"
 #include "Enemigo.h"
@@ -28,6 +29,9 @@ private:
     sf::Font fuenteGameOver;
 
     sf::Music musicaFondo;
+
+    sf::SoundBuffer bufferDisparo;
+    std::array<sf::Sound, 5> sonidosDisparo;
 
     Jugador* jugador;
     Bala* bala;
