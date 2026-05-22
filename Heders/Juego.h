@@ -24,6 +24,7 @@ private:
     sf::Texture texturaEnemigo2;
 
     sf::Sprite fondo;
+    std::vector<sf::Sprite> iconosVidas;
 
     sf::Font fuente;
     sf::Font fuenteGameOver;
@@ -38,6 +39,7 @@ private:
     std::vector<Enemigo*> enemigos;
 
     int puntuacion = 0;
+    int vidas = 3; // conteo de las vidas
     bool juegoTerminado = false;
 
     void cargarRecursos();
@@ -47,4 +49,6 @@ private:
 
     void mostrarPuntuacion();
     void mostrarGameOver();
+
+    void reiniciar();
 };

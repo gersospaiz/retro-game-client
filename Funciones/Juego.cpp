@@ -1,6 +1,7 @@
 #include "../Heders/Juego.h"
 #include "../Heders/Configuracion.h"
 #include "../Heders/Utilidades.h"
+#include "../Heders/GameOver.h"
 
 #include <iostream>
 #include <cstdlib>
@@ -18,6 +19,20 @@ Juego::Juego()
 
     jugador = new Jugador(texturaJugador);
     bala = new Bala(texturaBala);
+
+//------------------- crea las vidas del jeugo
+    for (int i = 0; i < 3; i++) {
+
+        sf::Sprite vida;
+
+        vida.setTexture(texturaJugador);
+
+        vida.setScale(0.7f, 0.7f);
+
+        vida.setPosition(620.f + ( i * 60), 20.f);
+        iconosVidas.push_back(vida);
+
+    }
 
     for (int i = 0; i < NUMERO_ENEMIGOS; i++) {
         if (i % 2 == 0) {
@@ -67,11 +82,37 @@ void Juego::cargarRecursos() {
 }
 
 void Juego::ejecutar() {
+
     while (ventana.isOpen()) {
+
         procesarEventos();
 
+        // SI EL JUEGO NO TERMINÓ
         if (!juegoTerminado) {
+
             actualizar();
+        }
+
+        // SI LAS VIDAS LLEGAN A 0
+        if (vidas <= 0) {
+
+            juegoTerminado = true;
+
+            GameOver gameOver;
+
+            int opcion = gameOver.ejecutar(ventana);
+
+            // REINICIAR
+            if (opcion == 1) {
+
+                reiniciar();
+            }
+
+            // SALIR
+            if (opcion == 2) {
+
+                ventana.close();
+            }
         }
 
         dibujar();
@@ -111,8 +152,18 @@ void Juego::actualizar() {
 
     for (Enemigo* enemigo : enemigos) {
         if (enemigo->obtenerPosicion().y > 440) {
-            juegoTerminado = true;
-            return;
+
+            vidas--;
+
+            iconosVidas.pop_back();
+
+            enemigo->reiniciar();
+
+
+            if (vidas == 0) {
+                {juegoTerminado = true;}
+                return;
+            }
         }
 
         enemigo->actualizar();
@@ -140,6 +191,10 @@ void Juego::dibujar() {
     bala->dibujar(ventana);
     jugador->dibujar(ventana);
 
+    for (sf::Sprite& vida: iconosVidas) {   // mostrara las vidas en pantalla
+        ventana.draw(vida);
+    }
+
     mostrarPuntuacion();
 
     if (juegoTerminado) {
@@ -158,6 +213,8 @@ void Juego::mostrarPuntuacion() {
     texto.setPosition(10.f, 10.f);
 
     ventana.draw(texto);
+
+
 }
 
 void Juego::mostrarGameOver() {
@@ -169,4 +226,40 @@ void Juego::mostrarGameOver() {
     texto.setPosition(110.f, 260.f);
 
     ventana.draw(texto);
+}
+
+void Juego::reiniciar() {
+
+    vidas = 3;
+    puntuacion = 0;
+    juegoTerminado = false;
+
+    enemigos.clear();
+
+    for (int i = 0; i < NUMERO_ENEMIGOS; i++) {
+
+        if (i % 2 == 0) {
+            enemigos.push_back(new Enemigo(texturaEnemigo1));
+        }
+        else {
+            enemigos.push_back(new Enemigo(texturaEnemigo2));
+        }
+    }
+
+    iconosVidas.clear();
+
+    for (int i = 0; i < 3; i++) {
+
+        sf::Sprite vida;
+
+        vida.setTexture(texturaJugador);
+
+        vida.setScale(0.7f, 0.7f);
+
+        vida.setPosition(620.f + (i * 60), 20.f);
+
+        iconosVidas.push_back(vida);
+    }
+
+    bala->reiniciar();
 }
