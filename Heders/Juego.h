@@ -11,7 +11,7 @@
 #include <fstream>
 #include <curl/curl.h>
 #include <string>
-
+#include "../Logica/json.hpp"
 
 enum EstadoJuego {
     INGRESANDO_NOMBRE,
@@ -36,6 +36,18 @@ private:
 
     bool llamarLoginAPI(const std::string& , const std::string& contrasena);
     static size_t escribirRespuesta(void* contenido, size_t size, size_t nmemb, std::string* out);
+
+    int saldoTokens = 0;
+    int costoPartida = 10;        // ← cámbialo cuando quieras
+    long long idPartida = 0;
+    bool partidaIniciadaAPI = false;
+    bool partidaFinalizada = false;
+    std::string tokenSesion = "";
+
+    sf::Text textoTokens;
+
+    bool llamarIniciarPartidaAPI();
+    bool llamarFinalizarPartidaAPI(const std::string& resultado);
 
 
     int ultimoAumentoVelocidad = 0;

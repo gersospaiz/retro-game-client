@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-
+#include "json.hpp"
 Juego::Juego()
 : ventana(sf::VideoMode::getDesktopMode(),
       "Destructor Espacial",
@@ -414,6 +414,12 @@ void Juego::mostrarPuntuacion() {
     texto.setCharacterSize(32);
     texto.setFillColor(sf::Color::White);
     texto.setPosition(10.f, 10.f);
+    textoTokens.setFont(fuente);
+    textoTokens.setString("Tokens: " + std::to_string(saldoTokens));
+    textoTokens.setCharacterSize(25);
+    textoTokens.setFillColor(sf::Color::Yellow);
+    textoTokens.setPosition(10.f, 40.f);
+    ventana.draw(textoTokens);
 
     ventana.draw(texto);
 }
@@ -890,8 +896,67 @@ bool Juego::llamarLoginAPI(const std::string& usuario, const std::string& contra
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
 
-    return (res == CURLE_OK && httpCode == 200);
+    if (res == CURLE_OK && httpCode == 200) {
+        // Parsear tokens del JSON
+        try {
+            auto json = nlohmann::json::parse(respuesta);
+            saldoTokens = json["usuario"]["saldo_tokens"].get<int>();
+            tokenSesion = json["token"].get<std::string>();
+        } catch (...) {
+            saldoTokens = 0;
+        }
+        return true;
+    }
+    return false;
 }
+
+bool Juego::llamarIniciarPartidaAPI() {
+    if (saldoTokens < costoPartida) {
+        mensajeAuth = "TOKENS INSUFICIENTES";
+        return false;
+    }
+    estado = JUGANDO;
+
+    CURL* curl = curl_easy_init();
+    if (!curl) return false;
+
+    std::string respuesta;
+    std::string body = "{\"costo_partida\":" + std::to_string(costoPartida) + "}";
+    std::string authHeader = "Authorization: Bearer " + tokenSesion;
+
+    struct curl_slist* headers = nullptr;
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    headers = curl_slist_append(headers, "x-api-key: B_G5_DESTRUCTOR_ESPACIAL_KEY_2026");
+    headers = curl_slist_append(headers, authHeader.c_str());
+
+    curl_easy_setopt(curl, CURLOPT_URL, "http://52.55.14.96:3000/api/external/games/start");
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, escribirRespuesta);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &respuesta);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+
+    CURLcode res = curl_easy_perform(curl);
+    long httpCode = 0;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+
+    if (res == CURLE_OK && httpCode == 200) {
+        try {
+            auto json = nlohmann::json::parse(respuesta);
+            idPartida = json["id_partida"].get<long long>();
+            saldoTokens -= costoPartida;  // descontar localmente
+            partidaIniciadaAPI = true;
+            partidaFinalizada = false;
+        } catch (...) {}
+        return true;
+    }
+    return false;
+}
+
 void Juego::procesarPausa(sf::Event evento) {
     if (evento.type == sf::Event::KeyPressed) {
 

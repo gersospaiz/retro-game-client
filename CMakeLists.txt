@@ -15,6 +15,7 @@ add_executable(DestructorEspacial
         Logica/Jugador.cpp
         Logica/Enemigo.cpp
         Logica/Bala.cpp
+        Logica/json.hpp
         Logica/BalaEnemiga.cpp
         Heders/BalaEnemiga.h
 )
@@ -30,6 +31,7 @@ target_link_libraries(DestructorEspacial
         sfml-system
         sfml-audio
         ${CURL_LIBRARY}
+
 )
 
 add_custom_command(TARGET DestructorEspacial POST_BUILD
