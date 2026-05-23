@@ -9,11 +9,13 @@
 #include "Enemigo.h"
 #include "Bala.h"
 #include <fstream>
-
+#include <curl/curl.h>
+#include <string>
 
 
 enum EstadoJuego {
-    INGRESAR_NOMBRE,
+    INGRESANDO_NOMBRE,
+    INGRESANDO_CONTRASENA,
     MENU,
     JUGANDO,
     PAUSA,
@@ -29,6 +31,12 @@ public:
     void ejecutar();
 
 private:
+    bool autenticando = false;
+    std::string mensajeAuth = "";
+
+    bool llamarLoginAPI(const std::string& , const std::string& contrasena);
+    static size_t escribirRespuesta(void* contenido, size_t size, size_t nmemb, std::string* out);
+
 
     int ultimoAumentoVelocidad = 0;
 
@@ -75,7 +83,7 @@ private:
     sf::SoundBuffer bufferExplosion;
     sf::Sound sonidoExplosion;
 
-    EstadoJuego estado = INGRESAR_NOMBRE;
+    EstadoJuego estado = INGRESANDO_NOMBRE;
 
     sf::Text textoNombre;
     sf::Text textoInputNombre;
@@ -135,5 +143,14 @@ private:
     void mostrarPausa();
     void procesarPausa(sf::Event evento);
     void reiniciarPartida();
+
+    std::string contrasenaJugador;
+    std::string contrasenaIngresada;
+    bool enPantallaContrasena = false;
+    sf::Text textoContrasena;
+    sf::Text textoInputContrasena;
+
+    void mostrarPantallaContrasena();
+    void procesarIngresoContrasena(sf::Event evento);
 
 };

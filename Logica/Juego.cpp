@@ -1,7 +1,6 @@
 #include "Juego.h"
 #include "Configuracion.h"
 #include "Utilidades.h"
-
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -145,7 +144,6 @@ void Juego::cargarRecursos() {
     }
 
 
-
     sonidoExplosion.setBuffer(bufferExplosion);
 
     sonidoDisparo.setBuffer(bufferDisparo);
@@ -172,10 +170,11 @@ void Juego::procesarEventos() {
         if (evento.type == sf::Event::Closed) {
             ventana.close();
         }
-
-        if (estado == INGRESAR_NOMBRE) {
+        if (estado == INGRESANDO_NOMBRE)
             procesarIngresoNombre(evento);
-        }
+
+        else if (estado == INGRESANDO_CONTRASENA)
+            procesarIngresoContrasena(evento);
         else if (estado == MENU) {
             procesarMenu(evento);
         }
@@ -360,8 +359,11 @@ void Juego::dibujar() {
     if (estado == MENU) {
         mostrarMenu();
     }
-    if (estado == INGRESAR_NOMBRE) {
+    if (estado == INGRESANDO_NOMBRE) {
         mostrarPantallaNombre();
+    }
+    else if (estado == INGRESANDO_CONTRASENA) {
+        mostrarPantallaContrasena();
     }
     else if (estado == JUGANDO) {
         for (int i = 0; i < enemigos.size(); i++) {
@@ -750,9 +752,35 @@ void Juego::procesarIngresoNombre(sf::Event evento) {
         if (evento.key.code == sf::Keyboard::Enter &&
             !nombreJugador.empty()) {
 
-            estado = MENU;
+            estado = INGRESANDO_CONTRASENA;
             }
     }
+}
+
+void Juego::mostrarPantallaContrasena() {
+
+    textoContrasena.setFont(fuenteGameOver);
+    textoContrasena.setString("INGRESA TU CONTRASENA");
+    textoContrasena.setCharacterSize(60);
+    textoContrasena.setFillColor(sf::Color::White);
+    textoContrasena.setPosition(
+        anchoVentana / 2.f - textoContrasena.getGlobalBounds().width / 2.f,
+        220.f
+    );
+    ventana.draw(textoContrasena);
+
+
+    std::string asteriscos(contrasenaJugador.size(), '*');
+
+    textoInputContrasena.setFont(fuente);
+    textoInputContrasena.setString(asteriscos + "_");
+    textoInputContrasena.setCharacterSize(50);
+    textoInputContrasena.setFillColor(sf::Color::Cyan);
+    textoInputContrasena.setPosition(
+        anchoVentana / 2.f - textoInputContrasena.getGlobalBounds().width / 2.f,
+        380.f
+    );
+    ventana.draw(textoInputContrasena);
 }
 
 void Juego::mostrarPausa() {
@@ -784,6 +812,86 @@ void Juego::mostrarPausa() {
     ventana.draw(instrucciones);
 }
 
+void Juego::procesarIngresoContrasena(sf::Event evento) {
+
+    if (evento.type == sf::Event::TextEntered) {
+
+        if (evento.text.unicode == '\b') {
+            if (!contrasenaJugador.empty()) {
+                contrasenaJugador.pop_back();
+            }
+        }
+        // ✅ Enter confirma y avanza al juego
+        else if (evento.text.unicode == '\r') {
+            if (contrasenaJugador.size() >= 4) {
+                enPantallaContrasena = false;
+                estado = JUGANDO;  // o el estado que uses
+            }
+        }
+        else if (evento.text.unicode < 128 &&
+                 contrasenaJugador.size() < 16)
+        {
+            char letra = static_cast<char>(evento.text.unicode);
+
+            if (std::isalnum(letra) || letra == '_') {
+                contrasenaJugador += letra;
+            }
+        }
+    }
+    if (evento.type == sf::Event::KeyPressed &&
+        evento.key.code == sf::Keyboard::Enter)
+    {
+        if (contrasenaJugador.size() >= 4) {
+            mensajeAuth = "VERIFICANDO...";
+            bool ok = llamarLoginAPI(nombreJugador, contrasenaJugador);
+
+            if (ok) {
+                mensajeAuth = "";
+                estado = MENU;
+            } else {
+                mensajeAuth = "USUARIO O CONTRASEÑA INCORRECTOS";
+                contrasenaJugador = "";
+                nombreJugador = "";
+                estado = INGRESANDO_NOMBRE;
+            }
+        }
+    }
+}
+
+size_t Juego::escribirRespuesta(void* contenido, size_t size, size_t nmemb, std::string* out) {
+    size_t total = size * nmemb;
+    out->append((char*)contenido, total);
+    return total;
+}
+
+bool Juego::llamarLoginAPI(const std::string& usuario, const std::string& contrasena) {
+    CURL* curl = curl_easy_init();
+    if (!curl) return false;
+
+    std::string respuesta;
+    std::string body = "{\"username\":\"" + usuario + "\",\"password\":\"" + contrasena + "\"}";
+
+    struct curl_slist* headers = nullptr;
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    headers = curl_slist_append(headers, "x-api-key: B_G5_DESTRUCTOR_ESPACIAL_KEY_2026");
+    curl_easy_setopt(curl, CURLOPT_URL, "http://52.55.14.96:3000/api/external/auth/login");
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, escribirRespuesta);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &respuesta);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+
+    CURLcode res = curl_easy_perform(curl);
+    std::string debug = "CURLcode: " + std::to_string(res) + "\nRespuesta: " + respuesta;
+    long httpCode = 0;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+
+    return (res == CURLE_OK && httpCode == 200);
+}
 void Juego::procesarPausa(sf::Event evento) {
     if (evento.type == sf::Event::KeyPressed) {
 
