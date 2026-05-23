@@ -3,18 +3,22 @@ project(DestructorEspacial)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(SFML_DIR "C:/Users/edgar/Downloads/SFML-2.5.1-windows-gcc-7.3.0-mingw-64-bit/SFML-2.5.1/lib/cmake/SFML")
+set(SFML_DIR "C:/SFML/SFML-2.6.2/lib/cmake/SFML")
 
 find_package(SFML 2.5 REQUIRED COMPONENTS graphics window system audio)
 
+
 add_executable(DestructorEspacial
-        Principal.cpp
-        Juego.cpp
-        Jugador.cpp
-        Enemigo.cpp
-        Bala.cpp
-        BalaEnemiga.cpp
-        BalaEnemiga.h
+        Logica/Principal.cpp
+        Logica/Juego.cpp
+        Logica/Jugador.cpp
+        Logica/Enemigo.cpp
+        Logica/Bala.cpp
+        Logica/BalaEnemiga.cpp
+        Heders/BalaEnemiga.h
+)
+target_include_directories(DestructorEspacial PRIVATE
+        ${CMAKE_SOURCE_DIR}/Heders
 )
 
 target_link_libraries(DestructorEspacial
