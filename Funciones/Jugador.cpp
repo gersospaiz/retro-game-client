@@ -20,8 +20,8 @@ void Jugador::actualizar() {
         sprite.setPosition({0.f, posicion.y});
     }
 
-    if (posicion.x > 736) {
-        sprite.setPosition({736.f, posicion.y});
+    if (posicion.x > 1200) {
+        sprite.setPosition({1200.f, posicion.y});
     }
 }
 

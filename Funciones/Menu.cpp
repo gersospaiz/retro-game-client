@@ -2,10 +2,6 @@
 #include "iostream"
 
 Menu::Menu() {
-    fuente.loadFromFile("assets/fonts/armalite.TTF");
-    if (!texturaFondo.loadFromFile("assets/images/fondo2.png")) {
-        std:: cout << "ERROR CARGANDO FONDO\n";
-    }
 
     fondo.setTexture(texturaFondo);
 
@@ -13,8 +9,8 @@ Menu::Menu() {
     fondo.setPosition(0.f, 0.f);
 
     fondo.setScale(
-    800.f / static_cast<float>(texturaFondo.getSize().x),
-    600.f / static_cast<float>(texturaFondo.getSize().y)
+    1244.f / static_cast<float>(texturaFondo.getSize().x),
+    700.f / static_cast<float>(texturaFondo.getSize().y)
 );
     //---APARATDO DEL TIRULO
     titulo.setFont(fuente);

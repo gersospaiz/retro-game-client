@@ -16,6 +16,12 @@ Juego::Juego()
     cargarRecursos();
 
     fondo.setTexture(texturaFondo);
+    fondo.setPosition(0.f, 0.f);
+
+    float escalaX = (float)ANCHO_PANTALLA / texturaFondo.getSize().x;
+    float escalaY = (float)ALTO_PANTALLA / texturaFondo.getSize().y;
+
+    fondo.setScale(escalaX, escalaY);
 
     jugador = new Jugador(texturaJugador);
     bala = new Bala(texturaBala);
@@ -75,7 +81,15 @@ void Juego::cargarRecursos() {
         std::cout << "Error al cargar fuente\n";
 
     if (!fuenteGameOver.loadFromFile("assets/fonts/armalite.TTF"))
-        std::cout << "Error al cargar fuente Game Over\n";
+    {
+        std::cout << "NO CARGO EL FONDO\n";
+    }
+    else
+    {
+        std::cout << "FONDO CARGADO\n";
+    }
+    std::cout << texturaFondo.getSize().x << std::endl;
+    std::cout << texturaFondo.getSize().y << std::endl;
 
     if (!musicaFondo.openFromFile("assets/audios/background_music.mp3"))
         std::cout << "Error al cargar musica\n";

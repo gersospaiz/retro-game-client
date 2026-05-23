@@ -22,6 +22,7 @@ private:
     sf::Texture texturaBala;
     sf::Texture texturaEnemigo1;
     sf::Texture texturaEnemigo2;
+    sf::Texture texturaFondogame;
 
     sf::Sprite fondo;
     std::vector<sf::Sprite> iconosVidas;

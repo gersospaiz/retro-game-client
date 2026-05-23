@@ -1,7 +1,7 @@
 #pragma once
 
-const int ANCHO_PANTALLA = 800;
-const int ALTO_PANTALLA = 600;
+const int ANCHO_PANTALLA = 1280;
+const int ALTO_PANTALLA = 720;
 
 const int NUMERO_ENEMIGOS = 10;
 

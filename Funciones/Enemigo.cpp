@@ -16,7 +16,7 @@ void Enemigo::actualizar() {
         sprite.move({0.f, BAJADA_ENEMIGO});
     }
 
-    else if (posicion.x >= 736) {
+    else if (posicion.x >= 1200) {
         cambioX = -VELOCIDAD_ENEMIGO;
         sprite.move({0.f, BAJADA_ENEMIGO});
     }

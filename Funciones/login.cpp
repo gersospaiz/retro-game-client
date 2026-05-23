@@ -172,7 +172,7 @@ bool Login::validarConAPI() {
     // ── Configura la petición POST ────────────────────────────────────────
     struct curl_slist* headers = nullptr;
     headers = curl_slist_append(headers, "Content-Type: application/json");
-    headers = curl_slist_append(headers, "x-api-key: B_G5_DESTRUCTOR_ESPACIAL_KEY_2026");
+        headers = curl_slist_append(headers, "x-api-key: B_G5_DESTRUCTOR_ESPACIAL_KEY_2026");
 
     curl_easy_setopt(curl, CURLOPT_URL, "http://52.55.14.96:3000/api/external/auth/login");
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, bodyStr.c_str());
