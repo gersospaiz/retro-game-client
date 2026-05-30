@@ -1,7 +1,9 @@
 #include "Jugador.h"
 #include "Configuracion.h"
 
-Jugador::Jugador(sf::Texture& textura, float anchoVentana, float altoVentana) : sprite(textura) {
+Jugador::Jugador(sf::Texture& textura, float anchoVentana, float altoVentana)
+    : sprite(textura) {
+
     sprite.setPosition({
         anchoVentana / 2.f - sprite.getGlobalBounds().width / 2.f,
         altoVentana - sprite.getGlobalBounds().height - 40.f
@@ -17,6 +19,7 @@ void Jugador::moverDerecha() {
 }
 
 void Jugador::actualizar() {
+
     sf::Vector2f posicion = sprite.getPosition();
 
     if (posicion.x < 0) {
@@ -37,5 +40,13 @@ sf::Vector2f Jugador::obtenerPosicion() const {
 }
 
 sf::FloatRect Jugador::obtenerBounds() const {
-    return sprite.getGlobalBounds();
+
+    sf::FloatRect bounds = sprite.getGlobalBounds();
+
+    bounds.left += 25.f;
+    bounds.top += 20.f;
+    bounds.width -= 50.f;
+    bounds.height -= 30.f;
+
+    return bounds;
 }

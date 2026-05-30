@@ -2,16 +2,18 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+
 #include <vector>
-#include "BalaEnemiga.h"
 #include <string>
+#include <fstream>
+
 #include "Jugador.h"
 #include "Enemigo.h"
 #include "Bala.h"
-#include <fstream>
-#include <curl/curl.h>
-#include <string>
-#include "../Logica/json.hpp"
+#include "BalaEnemiga.h"
+
+#include "ApiClient.h"
+#include "GameApiConfig.h"
 
 enum EstadoJuego {
     INGRESANDO_NOMBRE,
@@ -23,66 +25,79 @@ enum EstadoJuego {
     GAME_OVER
 };
 
-
-
 class Juego {
 public:
     Juego();
     void ejecutar();
 
 private:
-    bool autenticando = false;
-    std::string mensajeAuth = "";
 
-    bool llamarLoginAPI(const std::string& , const std::string& contrasena);
-    static size_t escribirRespuesta(void* contenido, size_t size, size_t nmemb, std::string* out);
+
+    ApiClient apiClient{
+        GameApiConfig::BASE_URL,
+        GameApiConfig::API_KEY,
+        GameApiConfig::CODIGO_JUEGO
+    };
+
+    UsuarioApi usuarioApi;
+    PartidaApi partidaApi;
+
+    bool partidaIniciadaAPI = false;
+    bool partidaFinalizadaAPI = false;
+
+    int ultimoScoreReportado = 0;
+    sf::Clock relojPartidaApi;
 
     int saldoTokens = 0;
-    int costoPartida = 10;        // ← cámbialo cuando quieras
-    long long idPartida = 0;
-    bool partidaIniciadaAPI = false;
-    bool partidaFinalizada = false;
-    std::string tokenSesion = "";
+    std::string mensajeAuth = "";
 
     sf::Text textoTokens;
 
-    bool llamarIniciarPartidaAPI();
-    bool llamarFinalizarPartidaAPI(const std::string& resultado);
-
 
     int ultimoAumentoVelocidad = 0;
-
     int vidas = 3;
+    int puntuacion = 0;
 
-    void mostrarVidas();
+    bool juegoTerminado = false;
+    bool invulnerable = false;
+
+    sf::Clock relojInvulnerable;
+
+    EstadoJuego estado = INGRESANDO_NOMBRE;
+
 
     sf::RenderWindow ventana;
 
-    sf::Texture texturaFondo;
+    float anchoVentana;
+    float altoVentana;
+    float posicionFondoY = 0.f;
 
+
+    sf::Texture texturaFondo;
+    sf::Sprite fondo;
     sf::Sprite fondo2;
+
+
     sf::Texture texturaJugador;
     sf::Texture texturaBala;
     sf::Texture texturaEnemigo1;
     sf::Texture texturaEnemigo2;
     sf::Texture texturaAsteroide;
-
     sf::Texture texturaExplosion;
+    sf::Texture texturaBalaEnemiga;
+
     sf::Sprite spriteExplosion;
 
     bool mostrarExplosion = false;
 
     sf::Clock relojExplosion;
 
-    sf::Sprite fondo;
 
+    Jugador* jugador;
+    Bala* bala;
 
-    sf::Texture texturaBalaEnemiga;
-
+    std::vector<Enemigo*> enemigos;
     std::vector<BalaEnemiga*> balasEnemigas;
-
-    bool invulnerable = false;
-    sf::Clock relojInvulnerable;
 
     sf::Font fuente;
     sf::Font fuenteGameOver;
@@ -95,77 +110,67 @@ private:
     sf::SoundBuffer bufferExplosion;
     sf::Sound sonidoExplosion;
 
-    EstadoJuego estado = INGRESANDO_NOMBRE;
 
     sf::Text textoNombre;
     sf::Text textoInputNombre;
+
     std::string nombreJugador = "";
 
-    void mostrarPantallaNombre();
-    void procesarIngresoNombre(sf::Event evento);
+    sf::Text textoContrasena;
+    sf::Text textoInputContrasena;
+
+    std::string contrasenaJugador = "";
 
     sf::Text textoTitulo;
     sf::Text textoJugar;
     sf::Text textoSalir;
-
-
-    void mostrarMenu();
-    void procesarMenu(sf::Event evento);
+    sf::Text textoPuntajes;
 
     sf::Text textoReiniciar;
     sf::Text textoMenuPrincipal;
 
-    bool mouseSobreReiniciar();
-    bool mouseSobreMenuPrincipal();
-
-    void procesarGameOver(sf::Event evento);
-
-    sf::Text textoPuntajes;
-
-    bool mouseSobrePuntajes();
-
-    void mostrarPuntajes();
-    void procesarPuntajes(sf::Event evento);
-
-    Jugador* jugador;
-    Bala* bala;
-    std::vector<Enemigo*> enemigos;
-
-    int puntuacion = 0;
-    bool juegoTerminado = false;
 
     void cargarRecursos();
+
     void procesarEventos();
     void actualizar();
     void dibujar();
 
-    void mostrarPuntuacion();
+
+    void mostrarPantallaNombre();
+    void procesarIngresoNombre(sf::Event evento);
+
+    void mostrarPantallaContrasena();
+    void procesarIngresoContrasena(sf::Event evento);
+
+    void mostrarMenu();
+    void procesarMenu(sf::Event evento);
+
+
+    void mostrarPuntajes();
+    void procesarPuntajes(sf::Event evento);
+
+
     void mostrarGameOver();
+    void procesarGameOver(sf::Event evento);
+
+
+    void mostrarPausa();
+    void procesarPausa(sf::Event evento);
+
+
+    void mostrarPuntuacion();
+    void mostrarVidas();
 
     void guardarPuntaje();
-
-    float anchoVentana;
-    float altoVentana;
+    void reiniciarPartida();
 
     bool mouseSobreJugar();
     bool mouseSobreSalir();
 
-    float posicionFondoY = 0.f;
+    bool mouseSobrePuntajes();
 
-    void mostrarPausa();
-    void procesarPausa(sf::Event evento);
-    void reiniciarPartida();
-
-    std::string contrasenaJugador;
-    std::string contrasenaIngresada;
-    bool enPantallaContrasena = false;
-    sf::Text textoContrasena;
-    sf::Text textoInputContrasena;
-
-    void mostrarPantallaContrasena();
-    void procesarIngresoContrasena(sf::Event evento);
-    bool usarAPI = false;
-    bool ok = false;
-
-
+    bool mouseSobreReiniciar();
+    bool mouseSobreMenuPrincipal();
+    bool loginActivo = true;
 };

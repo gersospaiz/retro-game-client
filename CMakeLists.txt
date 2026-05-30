@@ -17,7 +17,9 @@ add_executable(DestructorEspacial
         Logica/Bala.cpp
         Logica/json.hpp
         Logica/BalaEnemiga.cpp
+        logica/ApiClient.cpp
         Heders/BalaEnemiga.h
+
 )
 
 target_include_directories(DestructorEspacial PRIVATE
