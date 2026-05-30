@@ -418,7 +418,7 @@ void Juego::mostrarPuntuacion() {
     textoTokens.setString("Tokens: " + std::to_string(saldoTokens));
     textoTokens.setCharacterSize(25);
     textoTokens.setFillColor(sf::Color::Yellow);
-    textoTokens.setPosition(10.f, 40.f);
+    textoTokens.setPosition(10.f, 100.f);
     ventana.draw(textoTokens);
 
     ventana.draw(texto);
@@ -820,49 +820,50 @@ void Juego::mostrarPausa() {
 
 void Juego::procesarIngresoContrasena(sf::Event evento) {
 
+    // 1. MANEJO DE ESCRITURA (TEXT ENTERED)
     if (evento.type == sf::Event::TextEntered) {
-
         if (evento.text.unicode == '\b') {
             if (!contrasenaJugador.empty()) {
                 contrasenaJugador.pop_back();
             }
         }
-        // ✅ Enter confirma y avanza al juego
-        else if (evento.text.unicode == '\r') {
-            if (contrasenaJugador.size() >= 4) {
-                enPantallaContrasena = false;
-                estado = JUGANDO;  // o el estado que uses
-            }
-        }
-        else if (evento.text.unicode < 128 &&
-                 contrasenaJugador.size() < 16)
-        {
+        // Eliminamos el '\r' de aquí para que todo el control del Enter lo tenga el bloque de abajo
+        else if (evento.text.unicode < 128 && evento.text.unicode != '\r' && contrasenaJugador.size() < 16) {
             char letra = static_cast<char>(evento.text.unicode);
-
             if (std::isalnum(letra) || letra == '_') {
                 contrasenaJugador += letra;
             }
         }
     }
-    if (evento.type == sf::Event::KeyPressed &&
-        evento.key.code == sf::Keyboard::Enter)
-    {
-        if (contrasenaJugador.size() >= 4) {
-            mensajeAuth = "VERIFICANDO...";
-            bool ok = llamarLoginAPI(nombreJugador, contrasenaJugador);
 
+    // 2. MANEJO DEL ENTER (KEY PRESSED)
+    if (evento.type == sf::Event::KeyPressed && evento.key.code == sf::Keyboard::Enter) {
+
+        if (contrasenaJugador.size() >= 4) {
+            bool ok = false;
+
+            // Si usarAPI es true, consulta. Si es false, pasa directo (Bypass)
+            if (usarAPI) {
+                mensajeAuth = "VERIFICANDO...";
+                ok = llamarLoginAPI(nombreJugador, contrasenaJugador);
+            } else {
+                ok = false;
+            }
+
+            // Procesar el resultado del Login / Bypass
             if (ok) {
                 mensajeAuth = "";
-                estado = MENU;
+                estado = MENU; // O 'JUGANDO', según a dónde quieras mandar al usuario
             } else {
                 mensajeAuth = "USUARIO O CONTRASEÑA INCORRECTOS";
                 contrasenaJugador = "";
                 nombreJugador = "";
-                estado = INGRESANDO_NOMBRE;
+                estado = INGRESANDO_NOMBRE; // Regresa a pedir el nombre si falla
             }
         }
     }
 }
+
 
 size_t Juego::escribirRespuesta(void* contenido, size_t size, size_t nmemb, std::string* out) {
     size_t total = size * nmemb;
@@ -975,7 +976,11 @@ void Juego::procesarPausa(sf::Event evento) {
 void Juego::reiniciarPartida() {
     puntuacion = 0;
     vidas = 3;
-    ultimoAumentoVelocidad = 0;
+    if (vidas == 0)
+    {
+        vidas == 3;
+    }
+    ultimoAumentoVelocidad = 1;
     mostrarExplosion = false;
     invulnerable = false;
 
@@ -992,7 +997,7 @@ void Juego::mostrarVidas() {
     texto.setString("VIDAS: " + std::to_string(vidas));
     texto.setCharacterSize(32);
     texto.setFillColor(sf::Color::White);
-    texto.setPosition(10.f, 55.f);
+    texto.setPosition(55.f, 55.f);
 
     ventana.draw(texto);
 }

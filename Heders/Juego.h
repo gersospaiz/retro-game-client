@@ -164,5 +164,8 @@ private:
 
     void mostrarPantallaContrasena();
     void procesarIngresoContrasena(sf::Event evento);
+    bool usarAPI = false;
+    bool ok = false;
+
 
 };
