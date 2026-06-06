@@ -43,10 +43,10 @@ sf::FloatRect Jugador::obtenerBounds() const {
 
     sf::FloatRect bounds = sprite.getGlobalBounds();
 
-    bounds.left += 25.f;
-    bounds.top += 20.f;
-    bounds.width -= 50.f;
-    bounds.height -= 30.f;
+    bounds.left += 1.f;
+    bounds.top += 1.f;
+    bounds.width -= 1.f;
+    bounds.height -= 1.f;
 
     return bounds;
 }

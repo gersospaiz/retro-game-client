@@ -1,62 +1,29 @@
-#ifndef GAME_API_CONFIG_H // Evita que este archivo se incluya más de una vez.
-#define GAME_API_CONFIG_H // Define la protección del archivo.
+#ifndef GAME_API_CONFIG_H
+#define GAME_API_CONFIG_H
 
-#include <string> // Permite usar std::string para manejar textos.
+#include <string>
 
-namespace GameApiConfig { // Agrupa toda la configuración del juego en un solo lugar.
+namespace GameApiConfig {
 
-    // =========================
-    // CONFIGURACIÓN DEL SERVIDOR
-    // =========================
+    inline const std::string BASE_URL = "http://52.55.14.96:3000";
 
-    const std::string BASE_URL = "http://52.55.14.96:3000"; 
-    // Dirección del servidor en AWS donde está publicada la API.
+    inline const std::string API_KEY = "B_G5_DESTRUCTOR_ESPACIAL_KEY_2026";
 
-    // =========================
-    // CONFIGURACIÓN DEL JUEGO
-    // =========================
+    inline const std::string CODIGO_JUEGO = "B_G5_DESTRUCTOR_ESPACIAL";
 
-    const std::string API_KEY = "B_G5_DESTRUCTOR_ESPACIAL_KEY_2026";
-    // API KEY del grupo/juego. Sirve para que el servidor sepa qué grupo y sección se está conectando.
-    
-    const std::string CODIGO_JUEGO = "B_G5_DESTRUCTOR_ESPACIAL";
-    // Código único del juego registrado en la base de datos.
-   
-    const std::string VERSION_JUEGO = "1.0.0"; 
-    // Versión del juego. Se guarda en la partida para auditoría o control.
+    inline const std::string VERSION_JUEGO = "1.0.0";
 
-    // =========================
-    // COSTO DE PARTIDA
-    // =========================
+    inline const int COSTO_PARTIDA = 5;
 
-    const int COSTO_PARTIDA = 15; 
-    // Cantidad de tokens que se le descuentan al usuario cuando inicia una partida.
-    // Cada grupo puede cambiar este valor.
-    // El backend actualmente acepta de 0 a 1000.
+    inline const int SCORE_PREMIO_BAJO = 50;
 
-    // =========================
-    // REGLAS DE PREMIOS
-    // =========================
+    inline const int SCORE_PREMIO_ALTO = 100;
 
-    const int SCORE_PREMIO_BAJO = 50; 
-    // Puntaje mínimo para que el usuario gane el premio bajo.
+    inline const int PREMIO_BAJO = 10;
 
-    const int SCORE_PREMIO_ALTO = 100; 
-    // Puntaje mínimo para que el usuario gane el premio alto.
+    inline const int PREMIO_ALTO = 30;
 
-    const int PREMIO_BAJO = 10; 
-    // Tokens que gana el usuario si alcanza SCORE_PREMIO_BAJO.
-
-    const int PREMIO_ALTO = 30; 
-    // Tokens que gana el usuario si alcanza SCORE_PREMIO_ALTO.
-
-    // =========================
-    // REPORTE DE SCORE
-    // =========================
-
-    const int REPORTAR_CADA_PUNTOS = 50; 
-    // Cada cuántos puntos se recomienda mandar el score al servidor.
-    // Ejemplo: si vale 50, el juego puede reportar score en 50, 100, 150, etc.
+    inline const int REPORTAR_CADA_PUNTOS = 200;
 }
 
-#endif // Finaliza la protección del archivo.
+#endif

@@ -172,5 +172,8 @@ private:
 
     bool mouseSobreReiniciar();
     bool mouseSobreMenuPrincipal();
-    bool loginActivo = true;
+    bool loginActivo = false;
+
+    sf::Text textoCambiarUsuario;
+    bool mouseSobreCambiarUsuario();
 };

@@ -50,5 +50,13 @@ void BalaEnemiga::reiniciar() {
 }
 
 sf::FloatRect BalaEnemiga::obtenerBounds() const {
-    return sprite.getGlobalBounds();
+
+    sf::FloatRect bounds = sprite.getGlobalBounds();
+
+    bounds.left += 1.f;
+    bounds.top += 1.f;
+    bounds.width -= 1.f;
+    bounds.height -= 1.f;
+
+    return bounds;
 }

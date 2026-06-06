@@ -3,16 +3,12 @@
 #include "Utilidades.h"
 #include "GameApiConfig.h"
 #include "ApiClient.h"
-
+#include <thread>
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
 #include <cctype>
-
-// =========================
-// VARIABLES API
-// =========================
 
 static ApiClient apiClient(
     GameApiConfig::BASE_URL,
@@ -28,10 +24,6 @@ static bool partidaFinalizadaAPI = false;
 
 static int ultimoScoreReportado = 0;
 static sf::Clock relojPartidaApi;
-
-// =========================
-// CONSTRUCTOR
-// =========================
 
 Juego::Juego()
 : ventana(sf::VideoMode::getDesktopMode(),
@@ -201,9 +193,6 @@ void Juego::procesarEventos() {
     }
 }
 
-// =========================
-// ACTUALIZAR
-// =========================
 
 void Juego::actualizar() {
 
@@ -242,14 +231,7 @@ void Juego::actualizar() {
 
                 if (partidaIniciadaAPI && !partidaFinalizadaAPI) {
 
-                    int tokensGanados = 0;
-
-                    if (puntuacion >= GameApiConfig::SCORE_PREMIO_ALTO) {
-                        tokensGanados = GameApiConfig::PREMIO_ALTO;
-                    }
-                    else if (puntuacion >= GameApiConfig::SCORE_PREMIO_BAJO) {
-                        tokensGanados = GameApiConfig::PREMIO_BAJO;
-                    }
+                    int tokensGanados = puntuacion / 2;
 
                     int duracion = static_cast<int>(
                         relojPartidaApi.getElapsedTime().asSeconds()
@@ -257,15 +239,24 @@ void Juego::actualizar() {
 
                     std::string errorApi;
 
+                    int scoreFinal = puntuacion;
+                    int duracionFinal = duracion;
+                    int tokensFinales = tokensGanados;
+                    long long idPartidaFinal = partidaApi.idPartida;
+
+                                    std::thread([this, idPartidaFinal, scoreFinal, duracionFinal, tokensFinales]() {
+                    std::string errorApi;
+
                     apiClient.finalizarPartida(
-                        partidaApi.idPartida,
-                        puntuacion,
+                        idPartidaFinal,
+                        scoreFinal,
                         1,
                         "LOSE",
-                        duracion,
-                        tokensGanados,
+                        duracionFinal,
+                        tokensFinales,
                         errorApi
                     );
+                }).detach();
 
                     partidaFinalizadaAPI = true;
                     partidaIniciadaAPI = false;
@@ -293,14 +284,7 @@ void Juego::actualizar() {
 
                 if (partidaIniciadaAPI && !partidaFinalizadaAPI) {
 
-                    int tokensGanados = 0;
-
-                    if (puntuacion >= GameApiConfig::SCORE_PREMIO_ALTO) {
-                        tokensGanados = GameApiConfig::PREMIO_ALTO;
-                    }
-                    else if (puntuacion >= GameApiConfig::SCORE_PREMIO_BAJO) {
-                        tokensGanados = GameApiConfig::PREMIO_BAJO;
-                    }
+                    int tokensGanados = puntuacion / 2;
 
                     int duracion = static_cast<int>(
                         relojPartidaApi.getElapsedTime().asSeconds()
@@ -308,15 +292,24 @@ void Juego::actualizar() {
 
                     std::string errorApi;
 
-                    apiClient.finalizarPartida(
-                        partidaApi.idPartida,
-                        puntuacion,
-                        1,
-                        "LOSE",
-                        duracion,
-                        tokensGanados,
-                        errorApi
-                    );
+                    int scoreFinal = puntuacion;
+                    int duracionFinal = duracion;
+                    int tokensFinales = tokensGanados;
+                    long long idPartidaFinal = partidaApi.idPartida;
+
+                                        std::thread([this, idPartidaFinal, scoreFinal, duracionFinal, tokensFinales]() {
+                        std::string errorApi;
+
+                        apiClient.finalizarPartida(
+                            idPartidaFinal,
+                            scoreFinal,
+                            1,
+                            "LOSE",
+                            duracionFinal,
+                            tokensFinales,
+                            errorApi
+                        );
+                    }).detach();
 
                     partidaFinalizadaAPI = true;
                     partidaIniciadaAPI = false;
@@ -410,14 +403,7 @@ void Juego::actualizar() {
 
                 if (partidaIniciadaAPI && !partidaFinalizadaAPI) {
 
-                    int tokensGanados = 0;
-
-                    if (puntuacion >= GameApiConfig::SCORE_PREMIO_ALTO) {
-                        tokensGanados = GameApiConfig::PREMIO_ALTO;
-                    }
-                    else if (puntuacion >= GameApiConfig::SCORE_PREMIO_BAJO) {
-                        tokensGanados = GameApiConfig::PREMIO_BAJO;
-                    }
+                    int tokensGanados = puntuacion / 2;
 
                     int duracion = static_cast<int>(
                         relojPartidaApi.getElapsedTime().asSeconds()
@@ -425,15 +411,24 @@ void Juego::actualizar() {
 
                     std::string errorApi;
 
-                    apiClient.finalizarPartida(
-                        partidaApi.idPartida,
-                        puntuacion,
-                        1,
-                        "LOSE",
-                        duracion,
-                        tokensGanados,
-                        errorApi
-                    );
+                    int scoreFinal = puntuacion;
+                    int duracionFinal = duracion;
+                    int tokensFinales = tokensGanados;
+                    long long idPartidaFinal = partidaApi.idPartida;
+
+                    std::thread([this, idPartidaFinal, scoreFinal, duracionFinal, tokensFinales]() {
+                        std::string errorApi;
+
+                        apiClient.finalizarPartida(
+                            idPartidaFinal,
+                            scoreFinal,
+                            1,
+                            "LOSE",
+                            duracionFinal,
+                            tokensFinales,
+                            errorApi
+                        );
+                    }).detach();
 
                     partidaFinalizadaAPI = true;
                     partidaIniciadaAPI = false;
@@ -455,10 +450,6 @@ void Juego::actualizar() {
 
     bala->actualizar();
 }
-
-// =========================
-// DIBUJAR
-// =========================
 
 void Juego::dibujar() {
     ventana.clear();
@@ -513,10 +504,6 @@ void Juego::dibujar() {
     ventana.display();
 }
 
-// =========================
-// PUNTUACION Y VIDAS
-// =========================
-
 void Juego::mostrarPuntuacion() {
     sf::Text texto;
     texto.setFont(fuente);
@@ -550,10 +537,6 @@ void Juego::mostrarVidas() {
 
     ventana.draw(texto);
 }
-
-// =========================
-// GAME OVER
-// =========================
 
 void Juego::mostrarGameOver() {
 
@@ -606,10 +589,6 @@ void Juego::mostrarGameOver() {
 
     ventana.draw(textoMenuPrincipal);
 }
-
-// =========================
-// MENU
-// =========================
 
 void Juego::mostrarMenu() {
     textoTitulo.setFont(fuenteGameOver);
@@ -668,6 +647,30 @@ void Juego::mostrarMenu() {
         anchoVentana / 2.f - textoPuntajes.getGlobalBounds().width / 2.f,
         520.f
     );
+    textoCambiarUsuario.setFont(fuente);
+    textoCambiarUsuario.setString("CAMBIAR USUARIO");
+    textoCambiarUsuario.setCharacterSize(45);
+    textoCambiarUsuario.setFillColor(sf::Color::White);
+
+    textoCambiarUsuario.setPosition(
+        anchoVentana / 2.f - textoCambiarUsuario.getGlobalBounds().width / 2.f,
+        610.f
+    );
+
+    ventana.draw(textoCambiarUsuario);
+
+    if (!mensajeAuth.empty()) {
+        sf::Text mensaje;
+        mensaje.setFont(fuente);
+        mensaje.setString(mensajeAuth);
+        mensaje.setCharacterSize(28);
+        mensaje.setFillColor(sf::Color::Red);
+        mensaje.setPosition(
+            anchoVentana / 2.f - mensaje.getGlobalBounds().width / 2.f,
+            610.f
+        );
+        ventana.draw(mensaje);
+    }
 
     ventana.draw(textoTitulo);
     ventana.draw(textoJugar);
@@ -704,6 +707,15 @@ void Juego::procesarMenu(sf::Event evento) {
                 );
 
                 if (ok) {
+
+                    std::cout << "Saldo antes: "
+                              << partidaApi.saldoAntes
+                              << std::endl;
+
+                    std::cout << "Saldo despues: "
+                              << partidaApi.saldoDespues
+                              << std::endl;
+
                     saldoTokens = partidaApi.saldoDespues;
 
                     partidaIniciadaAPI = true;
@@ -716,6 +728,10 @@ void Juego::procesarMenu(sf::Event evento) {
                     estado = JUGANDO;
                 }
                 else {
+                    std::cout << "ERROR AL INICIAR PARTIDA: "
+                              << errorApi
+                              << std::endl;
+
                     mensajeAuth = errorApi;
                 }
             }
@@ -727,13 +743,24 @@ void Juego::procesarMenu(sf::Event evento) {
             if (mouseSobreSalir()) {
                 ventana.close();
             }
+            if (mouseSobreCambiarUsuario()) {
+
+                apiClient.cerrarSesion();
+
+                nombreJugador = "";
+                contrasenaJugador = "";
+                saldoTokens = 0;
+                mensajeAuth = "";
+
+                partidaIniciadaAPI = false;
+                partidaFinalizadaAPI = false;
+
+                estado = INGRESANDO_NOMBRE;
+            }
         }
     }
 }
 
-// =========================
-// MOUSE BOTONES
-// =========================
 
 bool Juego::mouseSobreJugar() {
     sf::Vector2i mouse = sf::Mouse::getPosition(ventana);
@@ -748,6 +775,14 @@ bool Juego::mouseSobreSalir() {
     sf::Vector2i mouse = sf::Mouse::getPosition(ventana);
 
     return textoSalir.getGlobalBounds().contains(
+        static_cast<float>(mouse.x),
+        static_cast<float>(mouse.y)
+    );
+}
+bool Juego::mouseSobreCambiarUsuario() {
+    sf::Vector2i mouse = sf::Mouse::getPosition(ventana);
+
+    return textoCambiarUsuario.getGlobalBounds().contains(
         static_cast<float>(mouse.x),
         static_cast<float>(mouse.y)
     );
@@ -780,10 +815,6 @@ bool Juego::mouseSobrePuntajes() {
     );
 }
 
-// =========================
-// PROCESAR GAME OVER
-// =========================
-
 void Juego::procesarGameOver(sf::Event evento) {
 
     if (evento.type == sf::Event::MouseButtonPressed) {
@@ -803,9 +834,6 @@ void Juego::procesarGameOver(sf::Event evento) {
     }
 }
 
-// =========================
-// PUNTAJES LOCAL
-// =========================
 
 void Juego::guardarPuntaje() {
 
@@ -821,10 +849,6 @@ void Juego::guardarPuntaje() {
         archivo.close();
     }
 }
-
-// =========================
-// RANKING API
-// =========================
 
 void Juego::mostrarPuntajes() {
 
@@ -891,10 +915,6 @@ void Juego::procesarPuntajes(sf::Event evento) {
         }
     }
 }
-
-// =========================
-// LOGIN NOMBRE
-// =========================
 
 void Juego::mostrarPantallaNombre() {
 

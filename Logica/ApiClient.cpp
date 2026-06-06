@@ -194,12 +194,12 @@ bool ApiClient::iniciarPartida(PartidaApi& partida, std::string& mensajeError, c
 
     partida.idPartida = p.value("id_partida", -1LL);
     partida.idJuego = p.value("id_juego", 0);
-    partida.codigoJuego = p.value("codigo_juego", "");
-    partida.nombreJuego = p.value("juego", "");
-    partida.username = p.value("username", "");
-    partida.costoTokens = p.value("costo_tokens", costoTokens);
-    partida.saldoAntes = p.value("saldo_antes", 0);
-    partida.saldoDespues = p.value("saldo_despues", 0);
+    partida.codigoJuego = data.value("codigo_juego", "");
+    partida.nombreJuego = "";
+    partida.username = "";
+    partida.costoTokens = data.value("costo_tokens", costoTokens);
+    partida.saldoAntes = data.value("saldo_antes", 0);
+    partida.saldoDespues = data.value("saldo_despues", 0);
 
     return true;
 }
